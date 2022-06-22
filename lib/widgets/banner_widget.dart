@@ -30,7 +30,7 @@ class BannerWidget extends StatelessWidget {
                 fontWeight: FontWeight.bold,),
             ),
             const Text(
-              'Strategy Planning',
+              'Strategic Planning',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 16,),
