@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<plugin id="plugin_id" version="plugin_version" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+    <name>
+		plugin_name
+	</name>
+    <js-module name="plugin_name" src="www/plugin_name.js">
+        <clobbers target="plugin_name" />
+    </js-module>
+    <platform name="ios">
+        <config-file parent="/*" target="config.xml">
+            <feature name="plugin_name">
+                <param name="ios-package" value="plugin_name" />
+            </feature>
+        </config-file>
+        <source-file src="src/ios/plugin_name.swift" />
+    </platform>
+    <platform name="android">
+		<config-file parent="/*" target="res/xml/config.xml">
+			<feature name="plugin_name">
+				<param name="android-package" value="package_id.plugin_name" />
+			</feature>
+		</config-file>
+		<config-file parent="/*" target="AndroidManifest.xml">
+		</config-file>
+		<source-file src="src/android/plugin_name.java" target-dir="src/package_path" />
+	</platform>
+</plugin>
