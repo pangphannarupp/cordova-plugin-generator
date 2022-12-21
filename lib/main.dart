@@ -16,9 +16,10 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
   windowManager.waitUntilReadyToShow().then((_) async {
-    await windowManager.setMaximumSize(const Size(1000, 850));
-    await windowManager.setMinimumSize(const Size(1000, 850));
-    await windowManager.setFullScreen(false);
+    double width = 1000, height = 850;
+    await windowManager.setMaximumSize(Size(width, height));
+    await windowManager.setMinimumSize(Size(width, height));
+    // await windowManager.setFullScreen(false);
     // await windowManager.center();
     await windowManager.show();
     await windowManager.setSkipTaskbar(false);
