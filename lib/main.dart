@@ -453,7 +453,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   maxLines: 1,
                                   decoration: InputDecoration(
                                     prefixIcon: const Icon(Icons.folder),
-                                    hintText: 'C:/cordova-plugin/',
+                                    hintText: Platform.isWindows ? 'C:/cordova-plugin': '/Users/Desktop',
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10),
                                     ),

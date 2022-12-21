@@ -29,12 +29,12 @@ class BannerWidget extends StatelessWidget {
                 fontSize: 25,
                 fontWeight: FontWeight.bold,),
             ),
-            const Text(
-              'Strategic Planning',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,),
-            ),
+            // const Text(
+            //   'Strategic Planning',
+            //   style: TextStyle(
+            //     color: Colors.white,
+            //     fontSize: 16,),
+            // ),
             const Text(
               'Version 1.0.1',
               style: TextStyle(
