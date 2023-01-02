@@ -4,6 +4,11 @@ List<String> structureList = [
   'www/plugin_name.js',
   'src/android/plugin_name.java',
   'src/ios/plugin_name.swift',
+  'plugin_id/index.d.ts',
+  'plugin_id/index.js',
+  'plugin_id/ngx/index.d.ts',
+  'plugin_id/ngx/index.js',
+  'plugin_id/ngx/index.metadata.json',
 ];
 
 String formatFunctionJS = "\tfunction_name: function(arg, onSuccess, onFail) {\n"+
@@ -28,3 +33,15 @@ String formatFunctionJava = "\tprivate void function_name() {\n"+
     "\t\tcordova.getActivity().runOnUiThread(() -> {\n\n"+
     "\t\t});\n"+
     "\t}\n\n";
+
+String formatFunctionIndexJS = "plugin_nameOriginal.prototype.function_name = function (param) { return cordova(this, \"function_name\", {}, arguments); };\n\t";
+
+String formatFunctionIndexJSNGX = "plugin_name.prototype.function_name = function (param) { return cordova(this, \"function_name\", {}, arguments); };\n\t";
+
+String formatFunctionIndexDTS = "function_name(param: any): Promise<any>;\n\t";
+
+String formatFunctionIndexMetadataJSON = "\"function_name\": ["+
+"{"+
+"\"__symbolic\": \"method\""+
+"}"+
+"],";

@@ -70,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final String PACKAGE_VERSION = 'plugin_version';
 
   String projectPath = 'C:/Users/ASUS-PC/Pictures/cordova-plugin/';
-  String pluginId = 'kr-co-mcnc-plugin';
+  String pluginId = 'cordova-plugin-name';
   String pluginVersion = '1.0.0';
   String pluginName = 'PluginName';
   List<String> functionNameList = [];
@@ -125,10 +125,46 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ],
     ),
+    Document(
+      name: 'Ionic Interface',
+      dateModified: DateTime.now(),
+      isFile: false,
+      childData: [
+        Document(name: 'ngx', dateModified: DateTime.now(), childData: [
+          Document(
+            name: 'index.d.ts',
+            dateModified: DateTime.now(),
+            isFile: true,
+          ),
+          Document(
+            name: 'index.js',
+            dateModified: DateTime.now(),
+            isFile: true,
+          ),
+          Document(
+            name: 'index.metadata.json',
+            dateModified: DateTime.now(),
+            isFile: true,
+          ),
+        ]),
+        Document(
+          name: 'index.d.ts',
+          dateModified: DateTime.now(),
+          isFile: true,
+        ),
+        Document(
+          name: 'index.js',
+          dateModified: DateTime.now(),
+          isFile: true,
+        ),
+      ],
+    ),
   ];
 
-  void generateTreeView(String pluginName) {
+  void generateTreeView(String pluginName, String pluginId) {
     setState(() {
+      pluginName = pluginName != '' ? pluginName : 'PluginName';
+      pluginId = pluginId != '' ? pluginId : 'cordova-plugin-name';
       documentList.clear();
       documentList.add(Document(
         name: pluginName,
@@ -170,6 +206,40 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ));
+      documentList.add(Document(
+          name: pluginId,
+          dateModified: DateTime.now(),
+          isFile: false,
+          childData: [
+            Document(name: 'ngx', dateModified: DateTime.now(), childData: [
+              Document(
+                name: 'index.d.ts',
+                dateModified: DateTime.now(),
+                isFile: true,
+              ),
+              Document(
+                name: 'index.js',
+                dateModified: DateTime.now(),
+                isFile: true,
+              ),
+              Document(
+                name: 'index.metadata.json',
+                dateModified: DateTime.now(),
+                isFile: true,
+              ),
+            ]),
+            Document(
+              name: 'index.d.ts',
+              dateModified: DateTime.now(),
+              isFile: true,
+            ),
+            Document(
+              name: 'index.js',
+              dateModified: DateTime.now(),
+              isFile: true,
+            ),
+          ],
+        ));
     });
   }
 
@@ -259,6 +329,47 @@ class _MyHomePageState extends State<MyHomePage> {
       stringBody = stringBody
           .replaceAll(ACTION_NAME, actionName)
           .replaceAll(FUNCTION_NAME, functionName);
+    } else if (file.contains('$PLUGIN_ID/index.js')) {
+      var functionName = '';
+      for (int i = 0; i < functionNameList.length; i++) {
+        functionName +=
+            formatFunctionIndexJS
+                .replaceAll(FUNCTION_NAME, functionNameList[i])
+                .replaceAll(PLUGIN_NAME, pluginName);
+      }
+      stringBody = stringBody.replaceAll(FUNCTION_NAME, functionName);
+      stringBody = stringBody.replaceAll(PLUGIN_NAME, pluginName);
+      stringBody = stringBody.replaceAll(PLUGIN_ID, pluginId);
+    } else if (file.contains('$PLUGIN_ID/ngx/index.js')) {
+      var functionName = '';
+      for (int i = 0; i < functionNameList.length; i++) {
+        functionName +=
+            formatFunctionIndexJSNGX
+                .replaceAll(FUNCTION_NAME, functionNameList[i])
+                .replaceAll(PLUGIN_NAME, pluginName);
+      }
+      stringBody = stringBody.replaceAll(FUNCTION_NAME, functionName);
+      stringBody = stringBody.replaceAll(PLUGIN_NAME, pluginName);
+      stringBody = stringBody.replaceAll(PLUGIN_ID, pluginId);
+    } else if (file.contains('index.d.ts')) {
+      var functionName = '';
+      for (int i = 0; i < functionNameList.length; i++) {
+        functionName +=
+            formatFunctionIndexDTS
+                .replaceAll(FUNCTION_NAME, functionNameList[i]);
+      }
+      stringBody = stringBody.replaceAll(FUNCTION_NAME, functionName);
+      stringBody = stringBody.replaceAll(PLUGIN_NAME, pluginName);
+    } else if (file.contains('index.metadata.json')) {
+      var functionName = '';
+      for (int i = 0; i < functionNameList.length; i++) {
+        functionName +=
+            formatFunctionIndexMetadataJSON
+                .replaceAll(FUNCTION_NAME, functionNameList[i]);
+      }
+      functionName = functionName.substring(0, functionName.length - 1);
+      stringBody = stringBody.replaceAll(FUNCTION_NAME, functionName);
+      stringBody = stringBody.replaceAll(PLUGIN_NAME, pluginName);
     } else {
       stringBody = stringBody
           .replaceAll(PLUGIN_ID, pluginId)
@@ -273,7 +384,8 @@ class _MyHomePageState extends State<MyHomePage> {
     // if (kDebugMode) {
     //   print(stringBody);
     // }
-    writeStringBody(file, stringBody);
+    // writeStringBody(file, stringBody);
+    writeStringBody(file.replaceAll(PLUGIN_ID, pluginId), stringBody);
   }
 
   Future<void> writeStringBody(String file, String body) async {
@@ -285,7 +397,7 @@ class _MyHomePageState extends State<MyHomePage> {
     var newFile = file.contains(PLUGIN_NAME)
         ? file.replaceAll(PLUGIN_NAME, pluginName)
         : file;
-    File('$projectPath/$pluginName/$newFile')
+    File('$projectPath/$pluginName/${newFile.replaceAll(PLUGIN_ID, pluginId)}')
         .create(recursive: true)
         .then((File f) {
       loadAndWriteStringBody(file);
@@ -295,17 +407,20 @@ class _MyHomePageState extends State<MyHomePage> {
   void createProject() {
     for (int i = 0; i < structureList.length; i++) {
       createFile(structureList[i]);
+
+      if(i == structureList.length - 1) {
+        formKey.currentState!.reset();
+        generateTreeView('', '');
+        alertMessage('$pluginName is generated successfully.');
+      }
     }
-    formKey.currentState!.reset();
-    generateTreeView('PluginName');
-    alertMessage('$pluginName is generated successfully.');
   }
 
   @override
   initState() {
     super.initState();
 
-    generateTreeView(pluginName);
+    generateTreeView(pluginName, pluginId);
   }
 
   @override
@@ -355,11 +470,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                     return null;
                                   },
                                   onChanged: (value) {
-                                    var name = value;
-                                    if (name == '') {
-                                      name = 'PluginName';
-                                    }
-                                    generateTreeView(name);
+                                    setState(() {
+                                      txtPluginName = value;
+                                    });
+                                    generateTreeView(txtPluginName, txtPluginId);
                                   },
                                   maxLines: 1,
                                   decoration: InputDecoration(
@@ -383,6 +497,12 @@ class _MyHomePageState extends State<MyHomePage> {
                                       txtPluginId = value;
                                     });
                                     return null;
+                                  },
+                                  onChanged: (value) {
+                                    setState(() {
+                                      txtPluginId = value;
+                                    });
+                                    generateTreeView(txtPluginName, txtPluginId);
                                   },
                                   maxLines: 1,
                                   decoration: InputDecoration(

@@ -1,0 +1,33 @@
+[
+    {
+        "__symbolic": "module",
+        "version": 4,
+        "metadata": {
+            "plugin_name": {
+                "__symbolic": "class",
+                "extends": {
+                    "__symbolic": "reference",
+                    "module": "@ionic-native/core",
+                    "name": "IonicNativePlugin",
+                    "line": 46,
+                    "character": 37
+                },
+                "decorators": [
+                    {
+                        "__symbolic": "call",
+                        "expression": {
+                            "__symbolic": "reference",
+                            "module": "@angular/core",
+                            "name": "Injectable",
+                            "line": 45,
+                            "character": 1
+                        }
+                    }
+                ],
+                "members": {
+                    function_name
+                }
+            }
+        }
+    }
+]
