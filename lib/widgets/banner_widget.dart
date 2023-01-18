@@ -35,8 +35,9 @@ class BannerWidget extends StatelessWidget {
             //     color: Colors.white,
             //     fontSize: 16,),
             // ),
+            const SizedBox(height: 10,),
             const Text(
-              'Version 1.1.2',
+              'Version 1.2.0',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 16,),

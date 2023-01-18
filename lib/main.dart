@@ -5,9 +5,12 @@ import 'package:cordova_plugin_tool/widgets/directory_widget.dart';
 import 'package:cordova_plugin_tool/models/document.dart';
 import 'package:cordova_plugin_tool/widgets/file_widget.dart';
 import 'package:cordova_plugin_tool/structure.dart';
+import 'package:filesystem_picker/filesystem_picker.dart';
+import 'package:path_provider/path_provider.dart';
 // import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:url_launcher/url_launcher.dart';
 // ignore: depend_on_referenced_packages
 import 'package:window_manager/window_manager.dart';
 import 'package:tree_view/tree_view.dart';
@@ -69,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
   // ignore: non_constant_identifier_names
   final String PACKAGE_VERSION = 'plugin_version';
 
-  String projectPath = 'C:/Users/ASUS-PC/Pictures/cordova-plugin/';
+  String projectPath = 'C:/cordova-plugin/';
   String pluginId = 'cordova-plugin-name';
   String pluginVersion = '1.0.0';
   String pluginName = 'PluginName';
@@ -207,27 +210,11 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ));
       documentList.add(Document(
-          name: pluginId,
-          dateModified: DateTime.now(),
-          isFile: false,
-          childData: [
-            Document(name: 'ngx', dateModified: DateTime.now(), childData: [
-              Document(
-                name: 'index.d.ts',
-                dateModified: DateTime.now(),
-                isFile: true,
-              ),
-              Document(
-                name: 'index.js',
-                dateModified: DateTime.now(),
-                isFile: true,
-              ),
-              Document(
-                name: 'index.metadata.json',
-                dateModified: DateTime.now(),
-                isFile: true,
-              ),
-            ]),
+        name: pluginId,
+        dateModified: DateTime.now(),
+        isFile: false,
+        childData: [
+          Document(name: 'ngx', dateModified: DateTime.now(), childData: [
             Document(
               name: 'index.d.ts',
               dateModified: DateTime.now(),
@@ -238,8 +225,24 @@ class _MyHomePageState extends State<MyHomePage> {
               dateModified: DateTime.now(),
               isFile: true,
             ),
-          ],
-        ));
+            Document(
+              name: 'index.metadata.json',
+              dateModified: DateTime.now(),
+              isFile: true,
+            ),
+          ]),
+          Document(
+            name: 'index.d.ts',
+            dateModified: DateTime.now(),
+            isFile: true,
+          ),
+          Document(
+            name: 'index.js',
+            dateModified: DateTime.now(),
+            isFile: true,
+          ),
+        ],
+      ));
     });
   }
 
@@ -287,6 +290,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: const Text('Ok'),
               onPressed: () {
                 Navigator.of(context).pop();
+                //launch(txtOutputPath);
               },
             ),
           ],
@@ -332,10 +336,9 @@ class _MyHomePageState extends State<MyHomePage> {
     } else if (file.contains('$PLUGIN_ID/index.js')) {
       var functionName = '';
       for (int i = 0; i < functionNameList.length; i++) {
-        functionName +=
-            formatFunctionIndexJS
-                .replaceAll(FUNCTION_NAME, functionNameList[i])
-                .replaceAll(PLUGIN_NAME, pluginName);
+        functionName += formatFunctionIndexJS
+            .replaceAll(FUNCTION_NAME, functionNameList[i])
+            .replaceAll(PLUGIN_NAME, pluginName);
       }
       stringBody = stringBody.replaceAll(FUNCTION_NAME, functionName);
       stringBody = stringBody.replaceAll(PLUGIN_NAME, pluginName);
@@ -343,10 +346,9 @@ class _MyHomePageState extends State<MyHomePage> {
     } else if (file.contains('$PLUGIN_ID/ngx/index.js')) {
       var functionName = '';
       for (int i = 0; i < functionNameList.length; i++) {
-        functionName +=
-            formatFunctionIndexJSNGX
-                .replaceAll(FUNCTION_NAME, functionNameList[i])
-                .replaceAll(PLUGIN_NAME, pluginName);
+        functionName += formatFunctionIndexJSNGX
+            .replaceAll(FUNCTION_NAME, functionNameList[i])
+            .replaceAll(PLUGIN_NAME, pluginName);
       }
       stringBody = stringBody.replaceAll(FUNCTION_NAME, functionName);
       stringBody = stringBody.replaceAll(PLUGIN_NAME, pluginName);
@@ -354,18 +356,16 @@ class _MyHomePageState extends State<MyHomePage> {
     } else if (file.contains('index.d.ts')) {
       var functionName = '';
       for (int i = 0; i < functionNameList.length; i++) {
-        functionName +=
-            formatFunctionIndexDTS
-                .replaceAll(FUNCTION_NAME, functionNameList[i]);
+        functionName += formatFunctionIndexDTS.replaceAll(
+            FUNCTION_NAME, functionNameList[i]);
       }
       stringBody = stringBody.replaceAll(FUNCTION_NAME, functionName);
       stringBody = stringBody.replaceAll(PLUGIN_NAME, pluginName);
     } else if (file.contains('index.metadata.json')) {
       var functionName = '';
       for (int i = 0; i < functionNameList.length; i++) {
-        functionName +=
-            formatFunctionIndexMetadataJSON
-                .replaceAll(FUNCTION_NAME, functionNameList[i]);
+        functionName += formatFunctionIndexMetadataJSON.replaceAll(
+            FUNCTION_NAME, functionNameList[i]);
       }
       functionName = functionName.substring(0, functionName.length - 1);
       stringBody = stringBody.replaceAll(FUNCTION_NAME, functionName);
@@ -408,8 +408,15 @@ class _MyHomePageState extends State<MyHomePage> {
     for (int i = 0; i < structureList.length; i++) {
       createFile(structureList[i]);
 
-      if(i == structureList.length - 1) {
+      if (i == structureList.length - 1) {
         formKey.currentState!.reset();
+        setState(() {
+          txtPluginName = '';
+          txtPluginId = '';
+          txtPluginVersion = '';
+          txtFunctionList = '';
+          txtOutputPath = '';
+        });
         generateTreeView('', '');
         alertMessage('$pluginName is generated successfully.');
       }
@@ -438,7 +445,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 Expanded(
                   flex: 2,
                   child: Container(
-                    margin: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                    margin:
+                        const EdgeInsets.only(left: 10, right: 10, bottom: 10),
                     padding: const EdgeInsets.all(10),
                     decoration: const BoxDecoration(
                         color: Colors.black12,
@@ -454,7 +462,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: SingleChildScrollView(
                       child: Container(
                           margin: const EdgeInsets.only(top: 0),
-                          padding: const EdgeInsets.only(left: 0, right: 10, bottom: 10),
+                          padding: const EdgeInsets.only(
+                              left: 0, right: 10, bottom: 10),
                           child: Form(
                             key: formKey,
                             child: Column(
@@ -473,7 +482,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                     setState(() {
                                       txtPluginName = value;
                                     });
-                                    generateTreeView(txtPluginName, txtPluginId);
+                                    generateTreeView(
+                                        txtPluginName, txtPluginId);
                                   },
                                   maxLines: 1,
                                   decoration: InputDecoration(
@@ -502,7 +512,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                     setState(() {
                                       txtPluginId = value;
                                     });
-                                    generateTreeView(txtPluginName, txtPluginId);
+                                    generateTreeView(
+                                        txtPluginName, txtPluginId);
                                   },
                                   maxLines: 1,
                                   decoration: InputDecoration(
@@ -561,24 +572,78 @@ class _MyHomePageState extends State<MyHomePage> {
                                 const SizedBox(
                                   height: 20,
                                 ),
-                                TextFormField(
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please enter output path';
-                                    }
-                                    setState(() {
-                                      txtOutputPath = value;
-                                    });
-                                    return null;
-                                  },
-                                  maxLines: 1,
-                                  decoration: InputDecoration(
-                                    prefixIcon: const Icon(Icons.folder),
-                                    hintText: Platform.isWindows ? 'C:/cordova-plugin': '/Users/Desktop',
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
+                                Row(
+                                  children: [
+                                    // Expanded(
+                                    //     child: TextFormField(
+                                    //   validator: (value) {
+                                    //     if (value == null || value.isEmpty) {
+                                    //       return 'Please enter output path';
+                                    //     }
+                                    //     setState(() {
+                                    //       txtOutputPath = value;
+                                    //     });
+                                    //     return null;
+                                    //   },
+                                    //   enabled: false,
+                                    //   maxLines: 1,
+                                    //   decoration: InputDecoration(
+                                    //     prefixIcon: const Icon(Icons.folder),
+                                    //     hintText: Platform.isWindows
+                                    //         ? 'C:/cordova-plugin'
+                                    //         : '/Users/Desktop',
+                                    //     border: OutlineInputBorder(
+                                    //       borderRadius:
+                                    //           BorderRadius.circular(10),
+                                    //     ),
+                                    //   ),
+                                    // )),
+                                    Expanded(child:
+                                    Container(
+                                      padding: const EdgeInsets.all(17),
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                          BorderRadius.circular(10),
+                                          border: Border.all(
+                                            color: Colors.grey,
+                                            width: 1,
+                                          )),
+                                      child: Text(txtOutputPath),
+                                    )),
+                                    const SizedBox(
+                                      width: 5,
                                     ),
-                                  ),
+                                    GestureDetector(
+                                      onTap: () async {
+                                        Directory rootPath =
+                                            await getLibraryDirectory();
+                                        String? path =
+                                            await FilesystemPicker.open(
+                                          title: 'Save to folder',
+                                          context: context,
+                                          rootDirectory: rootPath,
+                                          fsType: FilesystemType.folder,
+                                          pickText: 'Choose',
+                                          folderIconColor:
+                                              Theme.of(context).primaryColor,
+                                        );
+                                        setState(() {
+                                          txtOutputPath = path!;
+                                        });
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.all(17),
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            border: Border.all(
+                                              color: Colors.grey,
+                                              width: 1,
+                                            )),
+                                        child: const Text('Browse'),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 const SizedBox(
                                   height: 20,
