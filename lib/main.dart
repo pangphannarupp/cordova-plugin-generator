@@ -616,7 +616,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     GestureDetector(
                                       onTap: () async {
                                         Directory rootPath =
-                                            await getLibraryDirectory();
+                                            await getApplicationDocumentsDirectory();
                                         String? path =
                                             await FilesystemPicker.open(
                                           title: 'Save to folder',
